@@ -4,19 +4,22 @@
 
 #质量控制
 allsample_combined_cca <- subset(x = allsample_combined_cca, subset = nFeature_RNA > 500 & nFeature_RNA < 9000 & percent.mt < 40 & nCount_RNA <80000)
+
 #批次效应处理
 allsample_combined_cca_list <- SplitObject(allsample_combined_cca, split.by = "tech")
-for (i in 1:length(allsample_combined_cca_list)) {
-  allsample_combined_cca_list[[i]] <- NormalizeData(allsample_combined_cca_list[[i]], verbose = FALSE)
-  allsample_combined_cca_list[[i]] <- FindVariableFeatures(allsample_combined_cca_list[[i]], selection.method = "vst", 
-                                                           nfeatures = 1000, verbose = FALSE)
-}
+for (i in 1:length(allsample_combined_cca_list)) {allsample_combined_cca_list[[i]] <- NormalizeData(allsample_combined_cca_list[[i]], verbose = FALSE) allsample_combined_cca_list[[i]] <- FindVariableFeatures(allsample_combined_cca_list[[i]], selection.method = "vst",nfeatures = 1000, verbose = FALSE)}
+
 allsample_combined_cca_anchors <- FindIntegrationAnchors(object.list = allsample_combined_cca_list, dims = 1:30,anchor.features = 1000)
+
 allsample_combined_cca <- IntegrateData(anchorset = allsample_combined_cca_anchors, dims = 1:30)
+
 #标准化
 #DefaultAssay(allsample_combined_cca) <- "RNA"
+
 allsample_combined_cca <- ScaleData(allsample_combined_cca)
+
 allsample_combined_cca <- RunPCA(allsFindClustersFindClustersample_combined_cca, npcs = 30)
+
 #聚类
 allsample_combined_cca <- FindNeighbors(object = allsample_combined_cca, dims = 1:30)
 allsample_combined_cca <- FindClusters(object = allsample_combined_cca, resolution = 0.2)
